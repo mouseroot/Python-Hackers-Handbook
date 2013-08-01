@@ -144,8 +144,60 @@ P - void *,int
 ch3. Talking to networks
 ========================
 
+async sockets
+--------------
+
+import socket,select
+server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+server.bind(("",port))
+server.listen(10)
+server.setblocking(False)
+inputs = [server]
+while 1:
+	input_ready, output_ready, exp_ready = select.select(inputs,[],[])
+	
+	for sock in input_ready:
+		if sock is server:
+			client,addr = sock.accept()
+			inputs.append(client)
+		else:
+			data = sock.recv(1024)
+			if data:
+				print data
+			else:
+				sock.close()
+				inputs.remove(sock)
+				
+Datagram sockets
+-----------------
+
+import socket
+client = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+client.bind(("",0))
+while 1:
+	client.sendto("Data",(host,port))
+	data,addr = client.recvfrom(port)
+
 ch4. Abstract Syntax Trees
 ==========================
+
+Abstract Syntax Tree
+
+------
+An AST is a tree of nodes that represent synactic constructs
+Nodes are instances of classes with the base class ast.AST
+nodes have two "flavors" of attributes:
+	>attributes
+		lineno
+		col_offset
+		
+	>fields
+		children of a node
+		name
+		int
+		string
+		object
+		bool
 
 more to come
 ============
